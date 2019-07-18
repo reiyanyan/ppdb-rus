@@ -1,0 +1,3 @@
+redirect preview lewat url /siswa/preview/{id_siswa}
+jalannya : 
+    Save to databse -> get id_siswa, return redirect()->route('route.name', [$param]);
