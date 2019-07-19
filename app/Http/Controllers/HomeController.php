@@ -32,4 +32,20 @@ class HomeController extends Controller
             return view('student.index');
         }
     }
+    
+    public function home(){
+        switch(Auth::user()->role){
+            case 1:
+            return view('admin.index');
+            case 2:
+                return view('admin.index');
+            case 3:
+                return view('admin.index');
+            case 4:
+                return view('student.index');
+            case 5: 
+                return view('student.index');
+        }
+    }
+
 }

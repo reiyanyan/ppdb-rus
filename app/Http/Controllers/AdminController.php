@@ -3,9 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class AdminController extends Controller
 {
+    var $role = array(
+        1 => 'Siswa',
+        2 => 'SuperSuper Admin',
+        3 => 'Super Admin',
+        4 => 'Admin',
+        5 => 'Operator'
+    );
+
     public function daftarkan_siswa(){
         return view('student.daftar');
     }
@@ -73,4 +82,113 @@ class AdminController extends Controller
     public function hasil_data(){
         return view('admin.hasil_data.index');
     }
+
+    public function getAllUsers(){
+        $users = User::where('role', '!=', 1)->paginate(20);
+        $data = array();
+        foreach($users as $user){
+            $var['id'] = $user->id;
+            $var['nip'] = $user->nip;
+            $var['nama'] = $user->name;
+            $var['email'] = $user->email;
+            $var['handphone'] = $user->handphone;
+            $var['status'] = $this->role[$user->role];
+            $data[] = $var;
+        }
+        return response()->json([
+            'success' => true,
+            'current_page' => $users->currentPage(),
+            'last_page' => $users->lastPage(),
+            'data' => $data
+        ]);
+    }
+
+    public function tambah_user(Request $request){
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->nip = $request->nip;
+        $user->role = $request->role;
+        $user->handphone = $request->handphone;
+        $user->alamat = $request->alamat;
+        $user->password = bcrypt($request->password);
+        $user->save();
+        if($user->save()){
+            return response()->json([
+                'success' => true
+            ]);
+        } else {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+    }
+
+    public function info_user(Request $request){
+        $user = User::where('id', $request->id)->first();
+        $role = array(
+            1 => 'Siswa',
+            2 => 'SuperSuper Admin',
+            3 => 'Super Admin',
+            4 => 'Admin',
+            5 => 'Operator'
+        );
+        return response()->json([
+            'success' => true,
+            'data' => array(
+                'name' => $user->name,
+                'email' => $user->email,
+                'nip' => $user->nip,
+                'status' => $role[$user->role],
+                'handphone' => $user->handphone,
+                'alamat' => $user->alamat
+            )
+        ]);
+    }
+
+    public function update_user(Request $request){
+        $user = User::where('id', $request->id)->first();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->nip = $request->nip;
+        $user->role = $request->role;
+        $user->handphone = $request->handphone;
+        $user->alamat = $request->alamat;
+        $user->save();
+        if($user->save()){
+            return response()->json([
+                'success' => true
+            ]);
+        } else {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+    }
+
+    public function hapus_user(Request $request){
+        User::where('id', $request->id)->delete();
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    public function search_user(Request $request){
+        $users = User::where('name', 'LIKE', '%'.$request->search.'%')->orWhere('email', 'LIKE','%'.$request->search.'%')->orWhere('handphone', 'LIKE', '%'.$request->search.'%')->get();        
+        $data = array();
+        foreach($users as $user){
+            $var['id'] = $user->id;
+            $var['nip'] = $user->nip;
+            $var['nama'] = $user->name;
+            $var['email'] = $user->email;
+            $var['handphone'] = $user->handphone;
+            $var['status'] = $this->role[$user->role];
+            $data[] = $var;
+        }
+        return response()->json([
+            'success' => true,
+            'data' => $data
+        ]);
+    }
+
 }

@@ -1793,29 +1793,78 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  mounted: function mounted() {
+    this.getAllUsers();
+  },
   data: function data() {
+    var _this = this;
+
     return {
       dialog: false,
+      infoDialog: false,
+      nip: '',
+      nama: '',
+      alamat: '',
+      email: '',
+      status: '',
+      handphone: '',
+      password: '',
+      passwordConfirm: '',
+      search: '',
+      isSearch: false,
+      loading: true,
+      valid: true,
+      statusItems: ['SuperSuper Admin', 'Super Admin', 'Admin', 'Operator'],
+      mask_phone: '###-###-###-###',
       pw_visibility: false,
       pwc_visibility: false,
+      pagination: {
+        rowsPerPage: 20,
+        current: 1,
+        total: 0
+      },
+      passwordRules: [function (v) {
+        return !!v || 'Password is required';
+      }, function (v) {
+        return v && v.length >= 8 || 'Min 8 characters';
+      }],
+      passwordConfirmRules: [function (v) {
+        return !!v || 'Password Confirmation is Required';
+      }, function (v) {
+        return v == _this.password || "Password doesn't match";
+      }],
+      nameRules: [function (v) {
+        return !!v || 'Name is required';
+      }, function (v) {
+        return v && v.length <= 10 || 'Name must be less than 10 characters';
+      }],
+      nonNull: [function (v) {
+        return !!v || 'Field is Required';
+      }],
+      emailRules: [function (v) {
+        return !!v || 'E-mail is required';
+      }, function (v) {
+        return /.+@.+/.test(v) || 'E-mail must be valid';
+      }],
       headers: [{
         text: 'No. Pengguna',
         align: 'left',
-        sortable: false,
-        value: 'no_pengguna'
+        value: 'nip',
+        sortable: false
       }, {
         text: 'Nama',
         value: 'nama'
       }, {
-        text: 'Username',
-        value: 'username'
-      }, {
-        text: 'Jenis Kelamin',
-        value: 'jenis_kelamin'
-      }, {
-        text: 'Tanggal Lahir',
-        value: 'tanggal_lahir'
+        text: 'Email',
+        value: 'email'
       }, {
         text: 'Handphone',
         value: 'handphone'
@@ -1827,92 +1876,137 @@ __webpack_require__.r(__webpack_exports__);
         align: 'left',
         sortable: false
       }],
-      desserts: [{
-        no_pengguna: 'Frozen Yogurt',
-        nama: 159,
-        username: 6.0,
-        jenis_kelamin: 24,
-        tanggal_lahir: 4.0,
-        handphone: '1%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Ice cream sandwich',
-        nama: 237,
-        username: 9.0,
-        jenis_kelamin: 37,
-        tanggal_lahir: 4.3,
-        handphone: '1%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Eclair',
-        nama: 262,
-        username: 16.0,
-        jenis_kelamin: 23,
-        tanggal_lahir: 6.0,
-        handphone: '7%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Cupcake',
-        nama: 305,
-        username: 3.7,
-        jenis_kelamin: 67,
-        tanggal_lahir: 4.3,
-        handphone: '8%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Gingerbread',
-        nama: 356,
-        username: 16.0,
-        jenis_kelamin: 49,
-        tanggal_lahir: 3.9,
-        handphone: '16%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Jelly bean',
-        nama: 375,
-        username: 0.0,
-        jenis_kelamin: 94,
-        tanggal_lahir: 0.0,
-        handphone: '0%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Lollipop',
-        nama: 392,
-        username: 0.2,
-        jenis_kelamin: 98,
-        tanggal_lahir: 0,
-        handphone: '2%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Honeycomb',
-        nama: 408,
-        username: 3.2,
-        jenis_kelamin: 87,
-        tanggal_lahir: 6.5,
-        handphone: '45%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'Donut',
-        nama: 452,
-        username: 25.0,
-        jenis_kelamin: 51,
-        tanggal_lahir: 4.9,
-        handphone: '22%',
-        status: 'Admin'
-      }, {
-        no_pengguna: 'KitKat',
-        nama: 518,
-        username: 26.0,
-        jenis_kelamin: 65,
-        tanggal_lahir: 7,
-        handphone: '6%',
-        status: 'Admin'
-      }]
+      users: []
     };
   },
+  computed: {
+    searchTrigger: function searchTrigger() {
+      if (this.search == '') {
+        this.loading = true;
+        this.isSearch = false;
+        this.getAllUsers();
+      } else {
+        this.isSearch = true;
+        this.loading = true;
+        this.filteredUsers();
+      }
+    }
+  },
   methods: {
-    tambahPengguna: function tambahPengguna() {
+    openDialogAddUser: function openDialogAddUser() {
       this.dialog = true;
+    },
+    getAllUsers: function getAllUsers() {
+      var _this2 = this;
+
+      axios.get("admin/user_management/getAll?page=" + this.pagination.current).then(function (response) {
+        _this2.loading = false;
+        _this2.users = response.data.data;
+        _this2.pagination.current = response.data.current_page;
+        _this2.pagination.total = response.data.last_page;
+      }, function (error) {
+        console.log(error);
+      });
+    },
+    onPageChange: function onPageChange() {
+      this.getAllUsers();
+    },
+    filteredUsers: function filteredUsers() {
+      var _this3 = this;
+
+      axios.post('admin/user_management/search', {
+        _token: window.CSRF_TOKEN,
+        search: this.search
+      }).then(function (response) {
+        _this3.loading = false;
+        return _this3.users = response.data.data;
+      });
+    },
+    validate: function validate() {
+      if (this.$refs.form.validate()) {
+        axios.post('admin/user_management/tambah', {
+          _token: window.CSRF_TOKEN,
+          name: this.nama,
+          email: this.email,
+          nip: this.nip,
+          role: this.statusItems.indexOf(this.status) + 2,
+          handphone: '0' + this.handphone,
+          alamat: this.alamat,
+          password: this.passwordConfirm
+        }).then(function (response) {
+          if (response.data.success == true) {
+            Swal.fire('Sukses', 'Sukses Menambahkan Pengguna', 'success').then(function (result) {
+              if (result.value) window.location.reload();
+            });
+          }
+        });
+      }
+    },
+    updateUser: function updateUser() {
+      axios.post('admin/user_management/update', {
+        _token: window.CSRF_TOKEN,
+        id: this.id,
+        name: this.nama,
+        email: this.email,
+        nip: this.nip,
+        role: this.statusItems.indexOf(this.status) + 2,
+        handphone: '0' + this.handphone,
+        alamat: this.alamat
+      }).then(function (response) {
+        if (response.data.success == true) {
+          Swal.fire('Sukses', 'Sukses Memperbarui Pengguna', 'success').then(function (result) {
+            if (result.value) window.location.reload();
+          });
+        }
+      });
+    },
+    openInfoDialog: function openInfoDialog(id) {
+      var _this4 = this;
+
+      this.infoDialog = true;
+      this.dialog = true;
+      this.id = id;
+      axios.post('admin/user_management/info', {
+        _token: window.CSRF_TOKEN,
+        id: id
+      }).then(function (response) {
+        if (response.data.success == true) {
+          _this4.nama = response.data.data.name;
+          _this4.email = response.data.data.email;
+          _this4.nip = response.data.data.nip;
+          _this4.status = response.data.data.status;
+          _this4.handphone = response.data.data.handphone.substr(1);
+          _this4.alamat = response.data.data.alamat;
+        }
+      });
+    },
+    deleteUser: function deleteUser() {
+      var _this5 = this;
+
+      Swal.fire({
+        title: 'Anda Yakin ?',
+        text: "Anda tidak dapat mengembalikan ini",
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!'
+      }).then(function (result) {
+        if (result.value) {
+          axios.post('admin/user_management/delete', {
+            _token: window.CSRF_TOKEN,
+            id: _this5.id
+          }).then(function (response) {
+            if (response.data.success == true) {
+              Swal.fire('Sukses', 'Sukses Menghapus Pengguna', 'success').then(function (result) {
+                if (result.value) window.location.reload();
+              });
+            }
+          }, function (error) {
+            console.log(error);
+          });
+        }
+      });
     }
   }
 });
@@ -5114,7 +5208,7 @@ __webpack_require__.r(__webpack_exports__);
       menu: false
     };
   },
-  props: ['guest'],
+  props: ['guest', 'role'],
   computed: {
     token: function token() {
       var token = document.head.querySelector('meta[name="csrf-token"]');
@@ -42398,7 +42492,7 @@ var render = function() {
             {
               staticClass: "mr-0",
               attrs: { color: "green", dark: "" },
-              on: { click: _vm.tambahPengguna }
+              on: { click: _vm.openDialogAddUser }
             },
             [_vm._v("Tambah Pengguna")]
           )
@@ -42418,9 +42512,16 @@ var render = function() {
               _c("v-text-field", {
                 attrs: {
                   "append-icon": "search",
-                  label: "Search",
+                  label: "Cari berdasarkan nama, email, handphone",
                   "single-line": "",
                   "hide-details": ""
+                },
+                model: {
+                  value: _vm.search,
+                  callback: function($$v) {
+                    _vm.search = $$v
+                  },
+                  expression: "search"
                 }
               })
             ],
@@ -42429,14 +42530,26 @@ var render = function() {
           _vm._v(" "),
           _c("v-data-table", {
             staticClass: "elevation-1",
-            attrs: { headers: _vm.headers, items: _vm.desserts },
+            attrs: {
+              headers: _vm.headers,
+              items: _vm.users,
+              loading: _vm.loading,
+              pagination: _vm.pagination,
+              search: _vm.searchTrigger,
+              "hide-actions": ""
+            },
+            on: {
+              "update:pagination": function($event) {
+                _vm.pagination = $event
+              }
+            },
             scopedSlots: _vm._u([
               {
                 key: "items",
                 fn: function(props) {
                   return [
                     _c("td", { staticClass: "text-xs-left" }, [
-                      _vm._v(_vm._s(props.item.no_pengguna))
+                      _vm._v(_vm._s(props.item.nip))
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "text-xs-left" }, [
@@ -42444,15 +42557,7 @@ var render = function() {
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "text-xs-left" }, [
-                      _vm._v(_vm._s(props.item.username))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "text-xs-left" }, [
-                      _vm._v(_vm._s(props.item.jenis_kelamin))
-                    ]),
-                    _vm._v(" "),
-                    _c("td", { staticClass: "text-xs-left" }, [
-                      _vm._v(_vm._s(props.item.tanggal_lahir))
+                      _vm._v(_vm._s(props.item.email))
                     ]),
                     _vm._v(" "),
                     _c("td", { staticClass: "text-xs-left" }, [
@@ -42467,9 +42572,18 @@ var render = function() {
                       "td",
                       { staticClass: "text-xs-left" },
                       [
-                        _c("v-icon", { attrs: { color: "green" } }, [
-                          _vm._v("info")
-                        ])
+                        _c(
+                          "v-icon",
+                          {
+                            attrs: { color: "green" },
+                            on: {
+                              click: function($event) {
+                                return _vm.openInfoDialog(props.item.id)
+                              }
+                            }
+                          },
+                          [_vm._v("info")]
+                        )
                       ],
                       1
                     )
@@ -42477,7 +42591,29 @@ var render = function() {
                 }
               }
             ])
-          })
+          }),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "text-xs-center pt-2" },
+            [
+              !_vm.isSearch
+                ? _c("v-pagination", {
+                    staticClass: "mb-2",
+                    attrs: { length: _vm.pagination.total },
+                    on: { input: _vm.onPageChange },
+                    model: {
+                      value: _vm.pagination.current,
+                      callback: function($$v) {
+                        _vm.$set(_vm.pagination, "current", $$v)
+                      },
+                      expression: "pagination.current"
+                    }
+                  })
+                : _vm._e()
+            ],
+            1
+          )
         ],
         1
       ),
@@ -42534,7 +42670,28 @@ var render = function() {
                         _vm._v(" "),
                         _c("v-toolbar-title", [_vm._v("Tambah Pengguna")]),
                         _vm._v(" "),
-                        _c("v-spacer")
+                        _c("v-spacer"),
+                        _vm._v(" "),
+                        _c(
+                          "v-toolbar-items",
+                          [
+                            _vm.infoDialog
+                              ? _c(
+                                  "v-btn",
+                                  {
+                                    attrs: {
+                                      dark: "",
+                                      flat: "",
+                                      color: "error"
+                                    },
+                                    on: { click: _vm.deleteUser }
+                                  },
+                                  [_vm._v("Delete")]
+                                )
+                              : _vm._e()
+                          ],
+                          1
+                        )
                       ],
                       1
                     ),
@@ -42551,82 +42708,200 @@ var render = function() {
                           [
                             _c(
                               "v-form",
-                              { ref: "form", attrs: { "lazy-validation": "" } },
+                              {
+                                ref: "form",
+                                attrs: { "lazy-validation": "" },
+                                model: {
+                                  value: _vm.valid,
+                                  callback: function($$v) {
+                                    _vm.valid = $$v
+                                  },
+                                  expression: "valid"
+                                }
+                              },
                               [
                                 _c("v-text-field", {
-                                  attrs: { label: "NIK", required: "" }
-                                }),
-                                _vm._v(" "),
-                                _c("v-text-field", {
-                                  attrs: { label: "Nama", required: "" }
-                                }),
-                                _vm._v(" "),
-                                _c("v-text-field", {
-                                  attrs: { label: "Alamat", required: "" }
-                                }),
-                                _vm._v(" "),
-                                _c("v-text-field", {
-                                  attrs: { label: "E-mail", required: "" }
-                                }),
-                                _vm._v(" "),
-                                _c("v-text-field", {
                                   attrs: {
-                                    label: "Status",
-                                    placeholder: "superadmin",
+                                    rules: _vm.nonNull,
+                                    type: "number",
+                                    label: "NIP",
                                     required: ""
+                                  },
+                                  model: {
+                                    value: _vm.nip,
+                                    callback: function($$v) {
+                                      _vm.nip = $$v
+                                    },
+                                    expression: "nip"
                                   }
                                 }),
                                 _vm._v(" "),
                                 _c("v-text-field", {
                                   attrs: {
+                                    rules: _vm.nonNull,
+                                    label: "Nama",
+                                    required: ""
+                                  },
+                                  model: {
+                                    value: _vm.nama,
+                                    callback: function($$v) {
+                                      _vm.nama = $$v
+                                    },
+                                    expression: "nama"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("v-text-field", {
+                                  attrs: {
+                                    rules: _vm.nonNull,
+                                    label: "Alamat",
+                                    required: ""
+                                  },
+                                  model: {
+                                    value: _vm.alamat,
+                                    callback: function($$v) {
+                                      _vm.alamat = $$v
+                                    },
+                                    expression: "alamat"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("v-text-field", {
+                                  attrs: {
+                                    rules: _vm.emailRules,
+                                    label: "E-mail",
+                                    required: ""
+                                  },
+                                  model: {
+                                    value: _vm.email,
+                                    callback: function($$v) {
+                                      _vm.email = $$v
+                                    },
+                                    expression: "email"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("v-select", {
+                                  attrs: {
+                                    rules: _vm.nonNull,
+                                    items: _vm.statusItems,
+                                    label: "Status",
+                                    required: ""
+                                  },
+                                  model: {
+                                    value: _vm.status,
+                                    callback: function($$v) {
+                                      _vm.status = $$v
+                                    },
+                                    expression: "status"
+                                  }
+                                }),
+                                _vm._v(" "),
+                                _c("v-text-field", {
+                                  attrs: {
+                                    mask: _vm.mask_phone,
+                                    rules: _vm.nonNull,
                                     label: "No. Handphone",
                                     prefix: "+62",
                                     required: ""
-                                  }
-                                }),
-                                _vm._v(" "),
-                                _c("v-text-field", {
-                                  attrs: {
-                                    "append-icon": _vm.pw_visibility
-                                      ? "visibility"
-                                      : "visibility_off",
-                                    type: _vm.pw_visibility
-                                      ? "text"
-                                      : "password",
-                                    label: "Password",
-                                    hint: "At least 8 characters",
-                                    required: ""
                                   },
-                                  on: {
-                                    "click:append": function($event) {
-                                      _vm.pw_visibility = !_vm.pw_visibility
-                                    }
+                                  model: {
+                                    value: _vm.handphone,
+                                    callback: function($$v) {
+                                      _vm.handphone = $$v
+                                    },
+                                    expression: "handphone"
                                   }
                                 }),
                                 _vm._v(" "),
-                                _c("v-text-field", {
-                                  attrs: {
-                                    "append-icon": _vm.pwc_visibility
-                                      ? "visibility"
-                                      : "visibility_off",
-                                    type: _vm.pwc_visibility
-                                      ? "text"
-                                      : "password",
-                                    label: "Password Confirmation",
-                                    required: ""
-                                  },
-                                  on: {
-                                    "click:append": function($event) {
-                                      _vm.pwc_visibility = !_vm.pwc_visibility
-                                    }
-                                  }
-                                }),
+                                !_vm.infoDialog
+                                  ? _c("v-text-field", {
+                                      attrs: {
+                                        "append-icon": _vm.pw_visibility
+                                          ? "visibility"
+                                          : "visibility_off",
+                                        rules: _vm.passwordRules,
+                                        type: _vm.pw_visibility
+                                          ? "text"
+                                          : "password",
+                                        label: "Password",
+                                        hint: "At least 8 characters",
+                                        required: ""
+                                      },
+                                      on: {
+                                        "click:append": function($event) {
+                                          _vm.pw_visibility = !_vm.pw_visibility
+                                        }
+                                      },
+                                      model: {
+                                        value: _vm.password,
+                                        callback: function($$v) {
+                                          _vm.password = $$v
+                                        },
+                                        expression: "password"
+                                      }
+                                    })
+                                  : _vm._e(),
                                 _vm._v(" "),
-                                _c("v-btn", { attrs: { color: "success" } }, [
-                                  _vm._v(
-                                    "\n                                    SAVE\n                                "
-                                  )
-                                ])
+                                !_vm.infoDialog
+                                  ? _c("v-text-field", {
+                                      attrs: {
+                                        "append-icon": _vm.pwc_visibility
+                                          ? "visibility"
+                                          : "visibility_off",
+                                        rules: _vm.passwordConfirmRules,
+                                        type: _vm.pwc_visibility
+                                          ? "text"
+                                          : "password",
+                                        label: "Password Confirmation",
+                                        required: ""
+                                      },
+                                      on: {
+                                        "click:append": function($event) {
+                                          _vm.pwc_visibility = !_vm.pwc_visibility
+                                        }
+                                      },
+                                      model: {
+                                        value: _vm.passwordConfirm,
+                                        callback: function($$v) {
+                                          _vm.passwordConfirm = $$v
+                                        },
+                                        expression: "passwordConfirm"
+                                      }
+                                    })
+                                  : _vm._e(),
+                                _vm._v(" "),
+                                !_vm.infoDialog
+                                  ? _c(
+                                      "v-btn",
+                                      {
+                                        attrs: {
+                                          disabled: !_vm.valid,
+                                          color: "success"
+                                        },
+                                        on: { click: _vm.validate }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                    SAVE\n                                "
+                                        )
+                                      ]
+                                    )
+                                  : _c(
+                                      "v-btn",
+                                      {
+                                        attrs: {
+                                          disabled: !_vm.valid,
+                                          color: "success"
+                                        },
+                                        on: { click: _vm.updateUser }
+                                      },
+                                      [
+                                        _vm._v(
+                                          "\n                                    SAVE\n                                "
+                                        )
+                                      ]
+                                    )
                               ],
                               1
                             )
@@ -46087,7 +46362,7 @@ var render = function() {
   return _c(
     "div",
     [
-      _vm.guest == 0
+      _vm.guest == 0 && _vm.role != 1
         ? _c(
             "v-navigation-drawer",
             {
@@ -46585,7 +46860,7 @@ var render = function() {
         "v-toolbar",
         { attrs: { app: "", fixed: "", "clipped-left": "", dense: "" } },
         [
-          _vm.guest == 0
+          _vm.guest == 0 && _vm.role != 1
             ? _c("v-toolbar-side-icon", {
                 on: {
                   click: function($event) {

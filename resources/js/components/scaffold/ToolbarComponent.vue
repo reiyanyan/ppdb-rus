@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-navigation-drawer v-if="guest == 0" v-model="drawer" clipped fixed app>
+        <v-navigation-drawer v-if="guest == 0 && role != 1" v-model="drawer" clipped fixed app>
             <v-list dense>
                 <!-- Pengaturan Pengguna -->
                 <v-list-tile @click="openPengaturanPengguna">
@@ -148,7 +148,7 @@
         </v-navigation-drawer>
 
         <v-toolbar app fixed clipped-left dense>
-            <v-toolbar-side-icon v-if="guest == 0" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-side-icon v-if="guest == 0 && role != 1" @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title>PPDB Lorem Ipsum</v-toolbar-title>
             <v-spacer></v-spacer>
             <div v-if="guest == 0">
@@ -171,7 +171,7 @@ export default {
         menu: false,
     }),
     props: [
-        'guest'
+        'guest', 'role'
     ],
     computed: {
         token() {

@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Auth;
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'HomeController@home')->name('home');
 
 //index
 Route::get('/', 'HomeController@index')->name('index');
@@ -49,6 +49,15 @@ Route::group(['prefix' => 'admin'], function(){
     Route::get('kustom_pertanyaan', 'AdminController@kustom_pertanyaan');
     Route::get('verifikasi_data', 'AdminController@verifikasi_data');
     Route::get('hasil_data', 'AdminController@hasil_data');
+
+    Route::group(['prefix' => 'user_management'], function(){
+        Route::get('getAll', 'AdminController@getAllUsers');
+        Route::post('tambah', 'AdminController@tambah_user');
+        Route::post('info', 'AdminController@info_user');
+        Route::post('delete', 'AdminController@hapus_user');
+        Route::post('search', 'AdminController@search_user');
+        Route::post('update', 'AdminController@update_user');
+    });
 
     //grouping pembobotan
     Route::group(['prefix' => 'pembobotan'], function(){

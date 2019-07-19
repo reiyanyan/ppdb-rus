@@ -14,7 +14,7 @@
 </head>
 <body>
         <v-app id="app" style="background: #F0F0F7">
-            <toolbar guest="{{ Auth::guest() }}"></toolbar>
+            <toolbar guest="{{ Auth::guest() }}" @if(Auth::guest()) role="1" @else role="{{ Auth::user()->role }}" @endif></toolbar>
             <main class="">
                 <v-content>
                     @yield('content')
@@ -24,4 +24,7 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
         <script src="{{ asset('js/app.js') }}" defer></script>
 </body>
+<script>
+window.CSRF_TOKEN = '{{ csrf_token() }}';
+</script>
 </html>
