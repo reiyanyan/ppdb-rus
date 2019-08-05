@@ -10,7 +10,7 @@
                     </v-list-tile-action>
                     <v-list-tile-content>
                         <v-list-tile-title>
-                            Pengaturan Pengguna
+                            Pengaturan Pengguna *
                         </v-list-tile-title>
                     </v-list-tile-content>
                 </v-list-tile>

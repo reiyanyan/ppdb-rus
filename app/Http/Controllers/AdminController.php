@@ -126,20 +126,13 @@ class AdminController extends Controller
 
     public function info_user(Request $request){
         $user = User::where('id', $request->id)->first();
-        $role = array(
-            1 => 'Siswa',
-            2 => 'SuperSuper Admin',
-            3 => 'Super Admin',
-            4 => 'Admin',
-            5 => 'Operator'
-        );
         return response()->json([
             'success' => true,
             'data' => array(
                 'name' => $user->name,
                 'email' => $user->email,
                 'nip' => $user->nip,
-                'status' => $role[$user->role],
+                'status' => $this->role[$user->role],
                 'handphone' => $user->handphone,
                 'alamat' => $user->alamat
             )

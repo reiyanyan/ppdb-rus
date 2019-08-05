@@ -3646,9 +3646,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -44231,53 +44228,6 @@ var render = function() {
                       _vm._v(" "),
                       _c(
                         "v-flex",
-                        { attrs: { xs6: "" } },
-                        [
-                          _c(
-                            "h5",
-                            { staticClass: "font-weight-regular mb-0 pb-0" },
-                            [_vm._v("Jadwal Pendaftaran")]
-                          ),
-                          _vm._v(" "),
-                          _c("v-text-field", {
-                            staticClass: "mr-3",
-                            attrs: { label: "Nama Institusi", required: "" }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-flex",
-                        { attrs: { xs6: "" } },
-                        [
-                          _c(
-                            "h5",
-                            { staticClass: "font-weight-regular mb-0 pb-0" },
-                            [_vm._v(" ")]
-                          ),
-                          _vm._v(" "),
-                          _c("v-text-field", {
-                            staticClass: "ml-3",
-                            attrs: { label: "Nomor Pendaftaran", required: "" }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-flex",
-                        { attrs: { xs12: "" } },
-                        [
-                          _c("v-text-field", {
-                            attrs: { label: "Token", required: "" }
-                          })
-                        ],
-                        1
-                      ),
-                      _vm._v(" "),
-                      _c(
-                        "v-flex",
                         { attrs: { xs12: "" } },
                         [
                           _c("v-text-field", {
@@ -46401,7 +46351,7 @@ var render = function() {
                         [
                           _c("v-list-tile-title", [
                             _vm._v(
-                              "\n                        Pengaturan Pengguna\n                    "
+                              "\n                        Pengaturan Pengguna *\n                    "
                             )
                           ])
                         ],

@@ -13,17 +13,14 @@
                         <v-flex xs12>
                             <v-text-field label="Nama Institusi" required></v-text-field>
                         </v-flex>
-                        <v-flex xs6>
+                        <!-- <v-flex xs6>
                             <h5 class="font-weight-regular mb-0 pb-0">Jadwal Pendaftaran</h5>
-                            <v-text-field class="mr-3" label="Nama Institusi" required></v-text-field>
+                            <v-text-field class="mr-3" label="Mulai Pendaftaran" required></v-text-field>
                         </v-flex>
                         <v-flex xs6>
                             <h5 class="font-weight-regular mb-0 pb-0">&nbsp;</h5>
-                            <v-text-field class="ml-3" label="Nomor Pendaftaran" required></v-text-field>
-                        </v-flex>
-                        <v-flex xs12>
-                            <v-text-field label="Token" required></v-text-field>
-                        </v-flex>
+                            <v-text-field class="ml-3" label="Akhir Pendaftaran" required></v-text-field>
+                        </v-flex> -->
                         <v-flex xs12>
                             <v-text-field label="Alur Pendaftaran" required readonly @click="openAlurPendaftaran"></v-text-field>
                         </v-flex>
